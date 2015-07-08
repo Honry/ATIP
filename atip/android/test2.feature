@@ -1,6 +1,6 @@
 Feature: Embedding api usecase tests
     Scenario: Check xwalk & api versions
-        When I launch "usecase-embedding-android-test" with "org.xwalk.embedded.api.sample" and "XWalkVersionAndAPIVersion"
+        When I launch "usecase-embedding-android-test" with "org.xwalk.embedded.api.sample" and "XWalkVersionAndAPIVersion" on android
         And I register watcher "ClearInfoWindow" when "Info" click "confirm"
         And I force to run all watchers
         And I wait 3 seconds
