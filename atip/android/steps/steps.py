@@ -1,4 +1,4 @@
-# Copyright (c) 2014 Intel Corporation.
+# Copyright (c) 2015 Intel Corporation.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -24,9 +24,9 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # Authors:
-#         Fan, Yugang <yugang.fan@intel.com>
+#         Yang, Yunlong <yunlongx.yang@intel.com>
 
-import uiautomators
+import android
 import time
 import sys
 from behave import step
@@ -34,13 +34,13 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 
-@step(u'launch "{app_name}"')
+@step(u'launch "{app_name}" on android')
 def launch_app_by_name(context, app_name):
-    uiautomators.launch_app_by_name(context, app_name)
+    android.launch_app_by_name(context, app_name)
 
-@step(u'I launch "{app_name}" with "{apk_pkg_name}" and "{apk_activity_name}"')
+@step(u'I launch "{app_name}" with "{apk_pkg_name}" and "{apk_activity_name}" on android')
 def launch_app_by_names(context, app_name, apk_pkg_name, apk_activity_name):
-    uiautomators.launch_app_by_name(
+    android.launch_app_by_name(
         context,
         app_name,
         apk_pkg_name,
@@ -72,32 +72,30 @@ def select_text_object(context, text_name):
 
 @step(u'I should see web "{web_name}"')
 def select_web_object(context, web_name):
-	assert context.app.selectWebObjectBy(web_name).wait.exists(timeout=3000)
+	assert context.app.selectWebObjectBy(web_name).exists
 
 @step(u'I should see view "{view_name}"')
 def select_view_object(context, view_name):
-	assert context.app.selectViewObjectBy(view_name).wait.exists(timeout=3000)	
+	assert context.app.selectViewObjectBy(view_name).exists
 
-@step(u'I click "{button_name}" by "{widget_description}"')
-def click_button_object(context, button_name, widget_description):
-	ob = context.app.selectBtnObjectBy(button_name, widget_description)
-	assert ob.exists
-	assert context.app.clickBtnObject(ob)
+@step(u'I click "{button_name}"')
+def click_button_object(context, button_name):
+	ob = context.app.selectBtnObjectBy(button_name)
+	if ob.exists:
+		assert context.app.clickBtnObject(ob)
+	else:
+		ob = context.app.selectImageBtnObjectBy(button_name)
+		assert ob.exists
+		assert context.app.clickBtnObject(ob)
 
 @step(u'I edit text "{edit_text}" to input "{text}"')
 def set_edittext_object(context, edit_text, text):
-	ob = context.app.selectEdtObjectBy(edit_text, "description")
+	ob = context.app.selectEdtObjectBy(edit_text)
 	assert ob.exists
 	assert context.app.setEditText(ob, text)
 
-@step(u'I edit first text to input "{text}"')
-def set_edittext_object(context, text):
-	ob = context.app.selectEdtObjectBy("", "description")
-	assert ob.wait.exists(timeout=3000)
+@step(u'I edit index "{which}" text to input "{text}"')
+def set_edittext_object(context, which, text):
+	ob = context.app.selectEdtObjectBy("")[int(which)]
+	assert ob.exists
 	assert context.app.setEditText(ob, text)
-
-@step(u'I edit second text to input "{text}"')
-def set_edittext_object(context, text):
-	ob = context.app.selectEdtObjectBy("", "description")[1]
-	assert ob.wait.exists(timeout=3000)
-	assert context.app.setEditText(ob, text)	

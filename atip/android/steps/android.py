@@ -1,4 +1,4 @@
-# Copyright (c) 2014 Intel Corporation.
+# Copyright (c) 2015 Intel Corporation.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -37,8 +37,10 @@ from uiautomator import *
 reload(sys)
 sys.setdefaultencoding('utf-8')
 DEFAULT_CMD_TIMEOUT = 60
+DEFAULT_PARAMETER_KEYS = ["text", "textContains", "description", "descriptionContains"
+                "resourceId", "resourceIdMatches"]
 
-class UIAutomator(common.APP):
+class Android(common.APP):
 
     def __init__(self, app_config=None, app_name=None,
                  apk_pkg_name=None, apk_activity_name=None):
@@ -53,6 +55,7 @@ class UIAutomator(common.APP):
         self.device_id = self.app_config["platform"]["device"]
         self.adb = "adb -s %s shell" % self.device_id
         self.d = Device(self.device_id)
+        self.AutomatorDeviceObject = self.d(text="PaTaTotOmAtO")
         
     def launch_app(self):
         cmd = self.adb + \
@@ -86,7 +89,6 @@ class UIAutomator(common.APP):
 
 
     def doCMD(self, cmd, time_out=DEFAULT_CMD_TIMEOUT):
-        # print("Doing CMD: [ %s ]" % cmd)
         pre_time = time.time()
         output = []
         cmd_return_code = 1
@@ -100,7 +102,6 @@ class UIAutomator(common.APP):
             if cmd_return_code is None:
                 if elapsed_time >= time_out:
                     self.killProcesses(ppid=cmd_proc.pid)
-                    # print("Timeout to exe CMD")
                     return (None, None)
             elif output_line == '' and cmd_return_code is not None:
                 break
@@ -108,7 +109,6 @@ class UIAutomator(common.APP):
             output.append(output_line)
         if cmd_return_code != 0:
             pass
-            # print("Fail to exe CMD")
 
         return (cmd_return_code, output)
 
@@ -164,51 +164,68 @@ class UIAutomator(common.APP):
     def runAllWatchers(self):
         self.d.watchers.run()
 
-    def selectTvObjectBy(self, value, key="textContains"):
+    def waitObjectShow(self, ob, timeout=1000):
+        return ob.wait.exists(timeout=timeout)        
+
+    def selcetObjectBy(self, key ,value, class_name):
         if key == "text":
-            return self.d(text=value, className='android.widget.TextView')
+            return self.d(text=value, className=class_name)
         elif key == "textContains":
-            return self.d(textContains=value, className='android.widget.TextView')
+            return self.d(textContains=value, className=class_name)
         elif key == "description":
-            return self.d(description=value, className='android.widget.TextView')
+            return self.d(description=value, className=class_name)
         elif key == "descriptionContains":
-            return self.d(descriptionContains=value, className='android.widget.TextView')
+            return self.d(descriptionContains=value, className=class_name)
+        elif key == "resourceId":
+            return self.d(resourceId=value, className=class_name)
+        elif key == "resourceIdMatches":
+            return self.d(resourceIdMatches=value, className=class_name)
         else:
-            return None
+            return self.AutomatorDeviceObject
 
-    def selectBtnObjectBy(self, value, key="textContains"):
-        if key == "text":
-            return self.d(text=value, className='android.widget.Button')
-        elif key == "textContains":
-            return self.d(textContains=value, className='android.widget.Button')
-        elif key == "description":
-            return self.d(description=value, className='android.widget.Button')
-        elif key == "descriptionContains":
-            return self.d(descriptionContains=value, className='android.widget.Button')
-        else:
-            return None        
-        
-    def selectEdtObjectBy(self, value, key="textContains"):
-        if key == "text":
-            return self.d(text=value, className='android.widget.EditText')
-        elif key == "textContains":
-            return self.d(textContains=value, className='android.widget.EditText')
-        elif key == "description":
-            return self.d(description=value, className='android.widget.EditText')
-        elif key == "descriptionContains":
-            return self.d(descriptionContains=value, className='android.widget.EditText')
-        else:
-            return None
+    def selectTvObjectBy(self, text_name):
+        for key in DEFAULT_PARAMETER_KEYS:
+            ob = self.selcetObjectBy(key, text_name, "android.widget.TextView")
+            if self.waitObjectShow(ob):
+                return ob
+        return self.AutomatorDeviceObject
 
-    def selectViewObjectBy(self, value):
-        return self.d(description=value, className='android.view.View')
+    def selectBtnObjectBy(self, button_name):
+        for key in DEFAULT_PARAMETER_KEYS:
+            ob = self.selcetObjectBy(key, button_name, "android.widget.Button")
+            if self.waitObjectShow(ob):
+                return ob
+        return self.AutomatorDeviceObject    
 
-    def selectWebObjectBy(self, web_name):
-        return self.d(description=web_name, className='android.webkit.WebView')            
+    def selectEdtObjectBy(self, edittext_name):
+        for key in DEFAULT_PARAMETER_KEYS:
+            ob = self.selcetObjectBy(key, edittext_name, "android.widget.EditText")
+            if self.waitObjectShow(ob):
+                return ob
+        return self.AutomatorDeviceObject
 
-    def getTvObjectInfo(self, ob):
+    def selectImageBtnObjectBy(self, imagebtn_name):
+        for key in DEFAULT_PARAMETER_KEYS:
+            ob = self.selcetObjectBy(key, imagebtn_name, "android.widget.ImageButton")
+            if self.waitObjectShow(ob):
+                return ob
+        return self.AutomatorDeviceObject
+
+    def selectViewObjectBy(self, view_name):
+        ob = self.d(description=view_name, className='android.view.View')
+        if self.waitObjectShow(ob, 3000):
+            return ob
+        return self.AutomatorDeviceObject
+
+    def selectWebObjectBy(self, web_name):      
+        ob = self.d(description=web_name, className='android.webkit.WebView')
+        if self.waitObjectShow(ob, 3000):
+            return ob
+        return self.AutomatorDeviceObject        
+
+    def getObjectInfo(self, ob, str_key="text"):
         if ob.exists:
-            return ob.info["text"]
+            return ob.info[str_key]
         return None
 
     def clickBtnObject(self, ob):
@@ -223,16 +240,15 @@ class UIAutomator(common.APP):
             return True
         return False    
 
-
 def launch_app_by_name(
         context, app_name, apk_pkg_name=None, apk_activity_name=None):
-    if not context.uiautomator_config:
+    if not context.android_config:
         assert False
 
     if app_name in context.apps:
         context.apps[app_name].quit()
     context.apps.update(
-        {app_name: UIAutomator(context.uiautomator_config, app_name, apk_pkg_name, apk_activity_name)})
+        {app_name: Android(context.android_config, app_name, apk_pkg_name, apk_activity_name)})
     context.app = context.apps[app_name]
     if not context.app.launch_app():
         assert False

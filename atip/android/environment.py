@@ -1,4 +1,4 @@
-# Copyright (c) 2014 Intel Corporation.
+# Copyright (c) 2015 Intel Corporation.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # Authors:
-#         Fan, Yugang <yugang.fan@intel.com>
+#         Yang, Yunlong <yunlongx.yang@intel.com>
 
 import os
 import sys
@@ -33,8 +33,8 @@ from atip import environment as atipenv
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-uiautomator_json_path = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "uiautomator.json")
+android_json_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "android.json")
 
 
 def clean_context(context):
@@ -49,44 +49,44 @@ def clean_context(context):
 
 
 def load_default_config():
-    uiautomator_json = None
+    android_json = None
     try:
         platform_name = os.environ['TEST_PLATFORM']
         device = os.environ['DEVICE_ID']
         comm_mode = os.environ['CONNECT_TYPE']
         app_launcher = os.environ['LAUNCHER']
-        uiautomator_envs = json.loads(os.environ['UIAUTOMATOR_VARS'])
-        uiautomator_json = {}
+        android_envs = json.loads(os.environ['ANDROID_VARS'])
+        android_json = {}
         platform = {}
         platform.update({"name": platform_name})
         platform.update({"comm-mode": comm_mode})
         platform.update({"device": device})
-        uiautomator_json.update({"platform": platform})
-        uiautomator_json.update({"app_launcher": app_launcher})
-        uiautomator_json.update(
-            {"TEST_PKG_NAME": uiautomator_envs["androidPackage"]})
-        uiautomator_json.update(
-            {"TEST_ACTIVITY_NAME": uiautomator_envs["androidActivity"]})
+        android_json.update({"platform": platform})
+        android_json.update({"app_launcher": app_launcher})
+        android_json.update(
+            {"TEST_PKG_NAME": android_envs["androidPackage"]})
+        android_json.update(
+            {"TEST_ACTIVITY_NAME": android_envs["androidActivity"]})
     except Exception as e:
-        print("Failed to get test envs: %s, switch to uiautomator.json" % e)
+        print("Failed to get test envs: %s, switch to android.json" % e)
         try:
-            with open(uiautomator_json_path, "rt") as uiautomator_json_file:
-                uiautomator_json_raw = uiautomator_json_file.read()
-                uiautomator_json_file.close()
-                uiautomator_json = json.loads(uiautomator_json_raw)
+            with open(android_json_path, "rt") as android_json_file:
+                android_json_raw = android_json_file.read()
+                android_json_file.close()
+                android_json = json.loads(android_json_raw)
         except Exception as e:
-            print("Failed to read uiautomator json: %s" % e)
+            print("Failed to read android json: %s" % e)
             return None
 
-    return uiautomator_json
+    return android_json
 
 
 def before_all(context):
     atipenv.before_all(context)
     context.app = None
     context.apps = {}
-    context.uiautomator_config = load_default_config()
-    if not context.uiautomator_config:
+    context.android_config = load_default_config()
+    if not context.android_config:
         sys.exit(1)
 
 
