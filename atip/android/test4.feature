@@ -4,11 +4,11 @@ Feature: Embedding api usecase tests
         And I register watcher "ClearInfoWindow" when "Info" click "confirm"
         And I force to run all watchers
         And I wait 3 seconds
-        Then I edit index "0" text to input "jacky"
-        Then I edit index "1" text to input "10010"
-        Then I click "Write Contact"
+        Then I edit index 0 text to input "jacky"
+        Then I edit index 1 text to input "10010"
+        Then I click button "Write Contact"
         And I wait 1 seconds
-        Then I click "Read Contact"
+        Then I click button "Read Contact"
         And I wait 1 seconds
         Then I should see view "passed"
         And I remove all watchers

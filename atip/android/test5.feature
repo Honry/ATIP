@@ -4,5 +4,13 @@ Feature: Embedding api usecase tests
         And I register watcher "ClearInfoWindow" when "Info" click "confirm"
         And I force to run all watchers
         And I wait 3 seconds
-        Then I click "org.xwalk.embedded.api.sample:id/pause"
+        Then I click button "org.xwalk.embedded.api.sample:id/pause"
+        Then I save "android.view.View" on the "down" side of view "A script on this page starts this clock:" to temporary value "clock_pause"
+        And I wait 3 seconds
+		Then I save "android.view.View" on the "down" side of view "A script on this page starts this clock:" to temporary value "clock_after_pause"
+		Then I compare object "clock_pause" equal "clock_after_pause" on info "contentDescription"
+		Then I click button "org.xwalk.embedded.api.sample:id/pause"
+		And I wait 3 seconds
+		Then I save "android.view.View" on the "down" side of view "A script on this page starts this clock:" to temporary value "clock_onresume"
+		Then I compare object "clock_after_pause" unequal "clock_onresume" on info "contentDescription"
         And I remove all watchers

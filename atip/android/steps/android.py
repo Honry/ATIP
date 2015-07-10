@@ -39,6 +39,8 @@ sys.setdefaultencoding('utf-8')
 DEFAULT_CMD_TIMEOUT = 60
 DEFAULT_PARAMETER_KEYS = ["text", "textContains", "description", "descriptionContains"
                 "resourceId", "resourceIdMatches"]
+OBJECT_INFO_KEYS = ["contentDescription", "checked", "scrollable", "text", "packageName"
+                "selected", "enabled", "className"]
 
 class Android(common.APP):
 
@@ -56,6 +58,7 @@ class Android(common.APP):
         self.adb = "adb -s %s shell" % self.device_id
         self.d = Device(self.device_id)
         self.AutomatorDeviceObject = self.d(text="PaTaTotOmAtO")
+        self.info_temp = {}
         
     def launch_app(self):
         cmd = self.adb + \
@@ -164,6 +167,15 @@ class Android(common.APP):
     def runAllWatchers(self):
         self.d.watchers.run()
 
+    def turnOnDevice(self):
+        self.d.wakeup()
+
+    def turnOffDevice(self):
+        self.d.sleep()        
+
+    def pressKeyBy(self, device_key):
+        self.d.press(device_key)        
+
     def waitObjectShow(self, ob, timeout=1000):
         return ob.wait.exists(timeout=timeout)        
 
@@ -182,6 +194,13 @@ class Android(common.APP):
             return self.d(resourceIdMatches=value, className=class_name)
         else:
             return self.AutomatorDeviceObject
+
+    def selectAnyObjectBy(self, value, class_name):
+        for key in DEFAULT_PARAMETER_KEYS:
+            ob = self.selcetObjectBy(key, value, class_name)
+            if self.waitObjectShow(ob):
+                return ob
+        return self.AutomatorDeviceObject
 
     def selectTvObjectBy(self, text_name):
         for key in DEFAULT_PARAMETER_KEYS:
@@ -204,6 +223,13 @@ class Android(common.APP):
                 return ob
         return self.AutomatorDeviceObject
 
+    def selectImageViewObjectBy(self, imageview_name):
+        for key in DEFAULT_PARAMETER_KEYS:
+            ob = self.selcetObjectBy(key, imageview_name, "android.widget.ImageView")
+            if self.waitObjectShow(ob):
+                return ob
+        return self.AutomatorDeviceObject        
+
     def selectImageBtnObjectBy(self, imagebtn_name):
         for key in DEFAULT_PARAMETER_KEYS:
             ob = self.selcetObjectBy(key, imagebtn_name, "android.widget.ImageButton")
@@ -211,21 +237,34 @@ class Android(common.APP):
                 return ob
         return self.AutomatorDeviceObject
 
-    def selectViewObjectBy(self, view_name):
-        ob = self.d(description=view_name, className='android.view.View')
-        if self.waitObjectShow(ob, 3000):
-            return ob
+    def selectViewObjectBy(self, view_desc):
+        for key in ["description", "descriptionContains"]:
+            ob = self.selcetObjectBy(key, view_desc, "android.view.View")
+            if self.waitObjectShow(ob, 3000):
+                return ob
         return self.AutomatorDeviceObject
 
-    def selectWebObjectBy(self, web_name):      
-        ob = self.d(description=web_name, className='android.webkit.WebView')
-        if self.waitObjectShow(ob, 3000):
-            return ob
-        return self.AutomatorDeviceObject        
+    def selectWebObjectBy(self, web_desc):
+        for key in ["description", "descriptionContains"]:
+            ob = self.selcetObjectBy(key, web_desc, "android.webkit.WebView")
+            if self.waitObjectShow(ob, 3000):
+                return ob
+        return self.AutomatorDeviceObject  
 
     def getObjectInfo(self, ob, str_key="text"):
-        if ob.exists:
+        if ob.exists and str_key in OBJECT_INFO_KEYS:
             return ob.info[str_key]
+        return None
+
+    def save2InfoTemp(self, msg, key):
+        if msg == None:
+            return False
+        self.info_temp[key] = msg
+        return True
+
+    def get2InfoTemp(self, key):
+        if key in self.info_temp.keys():
+            return self.info_temp[key]
         return None
 
     def clickBtnObject(self, ob):
@@ -238,7 +277,57 @@ class Android(common.APP):
         if ob.exists:        
             ob.set_text(text)
             return True
-        return False    
+        return False
+
+    def selectRelativeObjectBy(self, ob, direction, class_name):
+        if ob.exists:
+            if direction == "left":
+                return ob.left(className=class_name)
+            elif direction == "right":
+                return ob.right(className=class_name)
+            elif direction == "up":
+                return ob.up(className=class_name)
+            elif direction == "down":
+                return ob.down(className=class_name)
+        return self.AutomatorDeviceObject
+
+    def flingBy(self, orientation, direction):
+        if orientation == "horiz" and direction == "forward":
+            self.d(scrollable=True).fling.horiz.forward()
+        elif orientation == "horiz" and direction == "backward":
+            self.d(scrollable=True).fling.horiz.backward()
+        elif orientation == "vert" and direction == "forward":
+            self.d(scrollable=True).fling.vert.forward()
+        elif orientation == "vert" and direction == "backward":
+            self.d(scrollable=True).fling.vert.backward()
+
+    def flingToEnd(self):
+        # fling to end vertically
+        self.d(scrollable=True).fling.toEnd()
+
+    def scrollBy(self, steps=10):
+        # scroll forward(default) vertically(default)
+        self.d(scrollable=True).scroll(steps=steps)
+
+    def scrollToEnd(self):
+        # scroll to end vertically
+        self.d(scrollable=True).scroll.toEnd()
+
+    def scrollTo(self, text_name):
+        # scroll forward vertically until specific ui object appears
+        self.d(scrollable=True).scroll.to(text=text_name)
+
+    def swipeTo(self, ob, direction):
+        if ob.exists:
+            if direction == "left":
+                ob.swipe.left()        
+            elif direction == "right":
+                ob.swipe.right()
+            elif direction == "up":
+                ob.swipe.up()
+            elif direction == "down":
+                ob.swipe.down()
+
 
 def launch_app_by_name(
         context, app_name, apk_pkg_name=None, apk_activity_name=None):
