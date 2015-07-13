@@ -3,7 +3,6 @@ Feature: scroll & fling tests
         When I launch "Settings" with "com.android.settings" and "Settings" on android
         And I wait 3 seconds
         Then I scroll to end
-        Then I press "back" key
         And I wait 3 seconds
         Then I press "home" key
         Then I fling "horiz" goto "forward"        
@@ -12,7 +11,7 @@ Feature: scroll & fling tests
         Then I save "android.widget.ImageView" on the "right" side of text "Settings" to temporary value "settings_app"
         Then I click object "settings_app"
         And I wait 3 seconds
-        Then I press "home" key        
+        Then I press "back" key    
         And I wait 3 seconds
         Then I press "recent" key
         And I wait 3 seconds

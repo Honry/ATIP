@@ -59,6 +59,7 @@ class Android(common.APP):
         self.d = Device(self.device_id)
         self.AutomatorDeviceObject = self.d(text="PaTaTotOmAtO")
         self.info_temp = {}
+        self.process_args = {"func_name": None, "func_args": []}
         
     def launch_app(self):
         cmd = self.adb + \

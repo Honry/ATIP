@@ -237,3 +237,94 @@ def swipe_to(context, key, orientation):
 	ob = context.app.get2InfoTemp(key)
 	assert ob.exists
 	context.app.swipeTo(ob, orientation)
+
+@step(u'I process text object "{text_name}"')
+def process_text_info_temp(context, text_name=""):
+	context.app.process_args['func_name'] = process_text_info_temp
+	if text_name:
+		context.app.process_args["func_args"] = [text_name, ]
+	else:
+		text_name = context.app.process_args["func_args"]
+	def save_process():	
+		ob = context.app.selectTvObjectBy(text_name)
+		assert ob.exists
+		return ob
+	return save_process
+
+@step(u'I process view object "{view_desc}"')
+def process_view_info_temp(context, view_desc=""):
+	context.app.process_args['func_name'] = process_view_info_temp
+	if view_desc:
+		context.app.process_args["func_args"] = [view_desc, ]
+	else:
+		view_desc = context.app.process_args["func_args"]
+	def save_process():	
+		ob = context.app.selectViewObjectBy(view_desc)
+		assert ob.exists
+		return ob
+	return save_process
+
+@step(u'I process any object "{class_name}" "{value_name}"')
+def process_any_info_temp(context, class_name="", value_name=""):
+	context.app.process_args['func_name'] = process_any_info_temp
+	if class_name and value_name:
+		context.app.process_args["func_args"] = [class_name, value_name]
+	else:
+		class_name, value_name = context.app.process_args["func_args"]
+	def save_process():	
+		ob = context.app.selectAnyObjectBy(value_name, class_name)
+		assert ob.exists
+		return ob
+	return save_process	
+
+@step(u'I process "{class_name}" on the "{relative}" side of text "{text_name}"')
+def process_relative_text_object(context, class_name="", relative="", text_name=""):
+	context.app.process_args['func_name'] = process_relative_text_object
+	if class_name and relative and text_name:
+		context.app.process_args["func_args"] = [class_name, relative, text_name]
+	else:
+		class_name, relative, text_name = context.app.process_args["func_args"]
+	def save_process():
+		ob = context.app.selectTvObjectBy(text_name)
+		assert ob.exists
+		relative_ob = context.app.selectRelativeObjectBy(ob, relative, class_name)
+		assert relative_ob.exists	
+		return relative_ob
+	return save_process
+
+@step(u'I process "{class_name}" on the "{relative}" side of view "{view_desc}"')
+def process_relative_view_object(context, class_name="", relative="", view_desc=""):
+	context.app.process_args['func_name'] = process_relative_view_object
+	if class_name and relative and view_desc:
+		context.app.process_args["func_args"] = [class_name, relative, view_desc]
+	else:
+		class_name, relative, view_desc = context.app.process_args["func_args"]
+	def save_process():
+		ob = context.app.selectViewObjectBy(view_desc)
+		assert ob.exists
+		relative_ob = context.app.selectRelativeObjectBy(ob, relative, class_name)
+		assert relative_ob.exists	
+		return relative_ob
+	return save_process
+
+@step(u'I process "{class_target}" on the "{relative}" side of any "{class_name}" "{value_name}"')
+def process_relative_any_object(context, class_target="", relative="", class_name="", value_name=""):
+	context.app.process_args['func_name'] = process_relative_any_object
+	if class_target and relative and class_name and value_name:
+		context.app.process_args["func_args"] = [class_target, relative, class_name, value_name]
+	else:
+		class_target, relative, class_name, value_name = context.app.process_args["func_args"]
+	def save_process():
+		ob = context.app.selectAnyObjectBy(value_name, class_name)
+		assert ob.exists
+		relative_ob = context.app.selectRelativeObjectBy(ob, relative, class_target)
+		assert relative_ob.exists	
+		return relative_ob
+	return save_process
+
+@step(u'I reload process result to temporary value "{key}"')
+def reload_process(context, key):
+	f = context.app.process_args['func_name'](context)
+	ob = f()
+	assert ob.exists
+	assert context.app.save2InfoTemp(ob, key)
