@@ -58,6 +58,25 @@ def wake_up(context):
 def wake_up(context):
 	context.app.turnOffDevice()	
 
+@step(u'I set orientation "{orientation}"')
+def set_orientation(context, orientation):
+	context.app.setDeviceOrientation(orientation)
+
+# take screenshot and save to local file "home.png", can not work until Android 4.2.
+@step(u'I take screenshot as "{name}"')
+def take_screenshot(context, name):
+	context.app.takeScreenshot(name)
+
+# open notification, can not work until Android 4.3.
+@step(u'I open notification')
+def open_notification(context):
+	assert context.app.openNotification()
+
+# open quick settings, can not work until Android 4.3.
+@step(u'I open quick settings')
+def open_quick_settings(context):
+	assert context.app.openQuickSettings()
+
 @step(u'I press "{key}" key')
 def press_key(context, key):
 	context.app.pressKeyBy(key)
@@ -226,17 +245,17 @@ def unequal_with_keys(context, key1, key2, what):
 
 @step(u'I scroll to end')
 def scroll_to_end(context):
-	context.app.scrollToEnd()
+	assert context.app.scrollToEnd()
 
 @step(u'I fling "{orientation}" goto "{direction}"')
 def fling_by(context, orientation, direction):
-	context.app.flingBy(orientation, direction)
+	assert context.app.flingBy(orientation, direction)
 
 @step(u'I swipe object "{key}" to "{orientation}"')
 def swipe_to(context, key, orientation):
 	ob = context.app.get2InfoTemp(key)
 	assert ob.exists
-	context.app.swipeTo(ob, orientation)
+	assert context.app.swipeTo(ob, orientation)
 
 @step(u'I process text object "{text_name}"')
 def process_text_info_temp(context, text_name=""):
@@ -328,3 +347,15 @@ def reload_process(context, key):
 	ob = f()
 	assert ob.exists
 	assert context.app.save2InfoTemp(ob, key)
+
+@step(u'I wait object "{key}" exist for "{time_out}"')
+def wait_object_exist(context, key, time_out):
+	ob = context.app.get2InfoTemp(key)
+	assert ob
+	assert context.app.waitObjectShow(ob, time_out)
+
+@step(u'I wait object "{key}" gone for "{time_out}"')
+def wait_object_gone(context, key, time_out):
+	ob = context.app.get2InfoTemp(key)
+	assert ob
+	assert context.app.waitObjectGone(ob, time_out)	

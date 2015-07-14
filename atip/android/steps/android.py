@@ -67,10 +67,13 @@ class Android(common.APP):
                 self.app_config["TEST_PKG_NAME"] + "/" + \
                 self.app_config["TEST_PKG_NAME"] + "." + \
                 self.app_config["TEST_ACTIVITY_NAME"]
+        self.d.screen.on()                
+        self.d.press.home()
+        self.d.orientation = "n"
         try:
             (return_code, output) = self.doCMD(cmd)
             if return_code == 0:
-                self.d.screen.on()
+                pass
             else:
                 print("\n".join(output))
                 return False
@@ -116,7 +119,7 @@ class Android(common.APP):
 
         return (cmd_return_code, output)
 
-    def killProcesses (self, ppid=None):
+    def killProcesses(self, ppid=None):
         ppid = str(ppid)
         pidgrp = []
 
@@ -175,10 +178,33 @@ class Android(common.APP):
         self.d.sleep()        
 
     def pressKeyBy(self, device_key):
-        self.d.press(device_key)        
+        self.d.press(device_key)
+
+    def setDeviceOrientation(self, orientation):
+        if orientation == None or orientation == "":
+            orientation = self.d.orientation
+        self.d.orientation = orientation
+
+    def freezeDeviceRotation(self):
+        self.d.freeze_rotation()
+
+    def unFreezeDeviceRotation(self):
+        self.d.freeze_rotation(False)
+
+    def takeScreenshot(self, name):
+        self.d.screenshot(name)
+
+    def openNotification(self):
+        return self.d.open.notification()
+
+    def openQuickSettings(self):
+        return self.d.open.quick_settings()
 
     def waitObjectShow(self, ob, timeout=1000):
-        return ob.wait.exists(timeout=timeout)        
+        return ob.wait.exists(timeout=timeout)
+
+    def waitObjectGone(self, ob, timeout=1000):
+        return ob.wait.gone(timeout=timeout)
 
     def selcetObjectBy(self, key ,value, class_name):
         if key == "text":
@@ -294,40 +320,42 @@ class Android(common.APP):
 
     def flingBy(self, orientation, direction):
         if orientation == "horiz" and direction == "forward":
-            self.d(scrollable=True).fling.horiz.forward()
+            return self.d(scrollable=True).fling.horiz.forward()
         elif orientation == "horiz" and direction == "backward":
-            self.d(scrollable=True).fling.horiz.backward()
+            return self.d(scrollable=True).fling.horiz.backward()
         elif orientation == "vert" and direction == "forward":
-            self.d(scrollable=True).fling.vert.forward()
+            return self.d(scrollable=True).fling.vert.forward()
         elif orientation == "vert" and direction == "backward":
-            self.d(scrollable=True).fling.vert.backward()
+            return self.d(scrollable=True).fling.vert.backward()
+        return False
 
     def flingToEnd(self):
         # fling to end vertically
-        self.d(scrollable=True).fling.toEnd()
+        return self.d(scrollable=True).fling.toEnd()
 
     def scrollBy(self, steps=10):
         # scroll forward(default) vertically(default)
-        self.d(scrollable=True).scroll(steps=steps)
+        return self.d(scrollable=True).scroll(steps=steps)
 
     def scrollToEnd(self):
         # scroll to end vertically
-        self.d(scrollable=True).scroll.toEnd()
+        return self.d(scrollable=True).scroll.toEnd()
 
     def scrollTo(self, text_name):
         # scroll forward vertically until specific ui object appears
-        self.d(scrollable=True).scroll.to(text=text_name)
+        return self.d(scrollable=True).scroll.to(text=text_name)
 
     def swipeTo(self, ob, direction):
         if ob.exists:
             if direction == "left":
-                ob.swipe.left()        
+                return ob.swipe.left()        
             elif direction == "right":
-                ob.swipe.right()
+                return ob.swipe.right()
             elif direction == "up":
-                ob.swipe.up()
+                return ob.swipe.up()
             elif direction == "down":
-                ob.swipe.down()
+                return ob.swipe.down()
+        return False
 
 
 def launch_app_by_name(
