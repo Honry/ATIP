@@ -4,6 +4,6 @@ Feature: Embedding api usecase tests
         And I register watcher "ClearInfoWindow" when "Info" click "confirm"
         And I register watcher "ClearAttentionWindow" when "Attention" click "OK"
         And I force to run all watchers
-        And I wait 10 seconds
+        And I sleep 10 seconds
         Then I should see web "百度一下"
         And I remove all watchers

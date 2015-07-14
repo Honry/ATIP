@@ -44,17 +44,26 @@ OBJECT_INFO_KEYS = ["contentDescription", "checked", "scrollable", "text", "pack
 
 class Android(common.APP):
 
-    def __init__(self, app_config=None, app_name=None,
-                 apk_pkg_name=None, apk_activity_name=None):
+    def __init__(self, app_config, app_name,
+                 apk_pkg_name, apk_activity_name):
         self.app_name = app_name
-        app_config_str = json.dumps(app_config).replace(
-                "TEST_APP_NAME", self.app_name)
-        if apk_pkg_name and apk_activity_name:
-            app_config_str = json.dumps(app_config).replace(
-                app_config["TEST_PKG_NAME"], apk_pkg_name).replace(
-                app_config["TEST_ACTIVITY_NAME"], apk_activity_name)
-        self.app_config = json.loads(app_config_str)
-        self.device_id = self.app_config["platform"]["device"]
+        if "platform" in app_config and "device" in app_config["platform"]:
+            self.device_id = app_config["platform"]["device"]
+        else:
+            self.device_id = ""
+        self.package_name = apk_pkg_name
+        self.activity_name = apk_activity_name
+        if not self.device_id:
+            devices = self.devices()
+            if devices:
+                if len(devices) == 1:
+                    self.device_id = list(devices.keys())[0]
+                else:
+                    print("more than one device connected.")
+                    sys.exit(1)
+            else:
+                print("no device found.")
+                sys.exit(1)
         self.adb = "adb -s %s shell" % self.device_id
         self.d = Device(self.device_id)
         self.AutomatorDeviceObject = self.d(text="PaTaTotOmAtO")
@@ -64,9 +73,9 @@ class Android(common.APP):
     def launch_app(self):
         cmd = self.adb + \
                 " am start -n " + \
-                self.app_config["TEST_PKG_NAME"] + "/" + \
-                self.app_config["TEST_PKG_NAME"] + "." + \
-                self.app_config["TEST_ACTIVITY_NAME"]
+                self.package_name + "/" + \
+                self.package_name + "." + \
+                self.activity_name
         self.d.screen.on()                
         self.d.press.home()
         self.d.orientation = "n"
@@ -84,15 +93,23 @@ class Android(common.APP):
     def quit(self):
         check_cmd = self.adb + \
                 " ps | grep " + \
-                self.app_config["TEST_PKG_NAME"]
+                self.package_name
         stop_cmd = self.adb + \
                 " am force-stop " + \
-                self.app_config["TEST_PKG_NAME"]
+                self.package_name
         (return_code, output) = self.doCMD(check_cmd)
         if return_code == 0 and output:
             self.doCMD(stop_cmd)
             if self.doCMD(check_cmd)[1] != []:
                 print("Please check your cmd: %s" % stop_cmd)
+
+    def devices(self):
+        out = "\n".join(self.doCMD("adb devices")[1])
+        match = "List of devices attached"
+        index = out.find(match)
+        if index < 0:
+            print("adb is not working.")
+        return dict([s.split("\t") for s in out[index + len(match):].strip().splitlines() if s.strip()])        
 
 
     def doCMD(self, cmd, time_out=DEFAULT_CMD_TIMEOUT):
@@ -148,7 +165,7 @@ class Android(common.APP):
 
     def checkLauncher(self):
         currentPackageName = self.d.info["currentPackageName"]
-        if currentPackageName == self.app_config["TEST_PKG_NAME"]:
+        if currentPackageName == self.package_name:
             return True
         return False
 
@@ -360,13 +377,13 @@ class Android(common.APP):
 
 def launch_app_by_name(
         context, app_name, apk_pkg_name=None, apk_activity_name=None):
-    if not context.android_config:
+    if not context.bdd_config:
         assert False
 
     if app_name in context.apps:
         context.apps[app_name].quit()
     context.apps.update(
-        {app_name: Android(context.android_config, app_name, apk_pkg_name, apk_activity_name)})
+        {app_name: Android(context.bdd_config, app_name, apk_pkg_name, apk_activity_name)})
     context.app = context.apps[app_name]
     if not context.app.launch_app():
         assert False
