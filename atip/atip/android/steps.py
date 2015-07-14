@@ -34,9 +34,9 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 
-@step(u'launch "{app_name}" on android')
-def launch_app_by_name(context, app_name):
-    android.launch_app_by_name(context, app_name)
+# @step(u'launch "{app_name}" on android')
+# def launch_app_by_name(context, app_name):
+#     android.launch_app_by_name(context, app_name)
 
 @step(u'I launch "{app_name}" with "{apk_pkg_name}" and "{apk_activity_name}" on android')
 def launch_app_by_names(context, app_name, apk_pkg_name, apk_activity_name):
@@ -46,8 +46,8 @@ def launch_app_by_names(context, app_name, apk_pkg_name, apk_activity_name):
         apk_pkg_name,
         apk_activity_name)
 
-@step(u'I wait {n:d} seconds')
-def wait_senconds(context, n):
+@step(u'I sleep {n:d} seconds')
+def sleep_senconds(context, n):
     time.sleep(n)
 
 @step(u'I turn on device')

@@ -85,8 +85,8 @@ def before_all(context):
     atipenv.before_all(context)
     context.app = None
     context.apps = {}
-    context.android_config = load_default_config()
-    if not context.android_config:
+    context.bdd_config = load_default_config()
+    if not context.bdd_config:
         sys.exit(1)
 
 
