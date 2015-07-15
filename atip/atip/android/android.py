@@ -44,7 +44,6 @@ OBJECT_INFO_KEYS = ["contentDescription", "checked", "scrollable", "text", "pack
 
 class Android(common.APP):
 
-
     def __init__(self, app_config, app_name,
                  apk_pkg_name, apk_activity_name):
         self.app_name = app_name

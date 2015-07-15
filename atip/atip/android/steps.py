@@ -130,21 +130,21 @@ def select_view_object(context, view_desc):
 	assert context.app.selectViewObjectBy(view_desc).exists
 
 
-@step(u'I should see "{class_name}" on the "{relative}" side of text "{text_name}"')
+@step(u'I should see class "{class_name}" on the "{relative}" side of text "{text_name}"')
 def select_relative_text_object(context, class_name, relative, text_name):
 	ob = context.app.selectTvObjectBy(text_name)
 	assert ob.exists
 	assert context.app.selectRelativeObjectBy(ob, relative, class_name).exists
 
 
-@step(u'I should see "{class_name}" on the "{relative}" side of view "{view_desc}"')
+@step(u'I should see class "{class_name}" on the "{relative}" side of view "{view_desc}"')
 def select_relative_view_object(context, class_name, relative, view_desc):
 	ob = context.app.selectViewObjectBy(view_desc)
 	assert ob.exists
 	assert context.app.selectRelativeObjectBy(ob, relative, class_name).exists	
 
 
-@step(u'I should see "{class_target}" on the "{relative}" side of any "{class_name}" "{value_name}"')
+@step(u'I should see class "{class_target}" on the "{relative}" side of any "{class_name}" "{value_name}"')
 def select_relative_any_object(context, class_target, relative, class_name, view_desc):
 	ob = context.app.selectAnyObjectBy(value_name, class_name)
 	assert ob.exists
