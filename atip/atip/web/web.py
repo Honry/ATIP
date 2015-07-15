@@ -62,7 +62,8 @@ class WebAPP(common.APP):
         self.device_platform = ""
         self.test_type = ""
         self.read_config()
-        self.baseline_path = self.cur_path + "/data/" + self.device_platform
+        self.test_url = app_config["test-url"]
+        self.baseline_path = self.test_url + "/../../data/" + self.device_platform
         self.text_value = {}
         self.picture_list = []
         self.color_dict = {
@@ -294,6 +295,17 @@ class WebAPP(common.APP):
                 return False
         except Exception as e:
             print "Failed to compare these two param: %s" % e
+        return False
+
+    def compare_two_values_range(self, first=None, second=None, value=None):
+        try:
+            result = eval(self.text_value[second]) - eval(self.text_value[first])
+            if  result >= eval(value) :
+                return True
+            else:
+                return False
+        except Exception as e:
+            print "Failed to compare these two param with value: %s" % e
         return False
 
     def save_content(self, p_name=None, key=None):

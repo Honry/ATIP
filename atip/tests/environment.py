@@ -66,6 +66,7 @@ def load_default_config():
         platform.update({"comm-mode": comm_mode})
         platform.update({"device": device})
         bdd_json.update({"platform": platform})
+        bdd_json.update({"test-url": os.path.split(os.path.realpath(__file__))[0]})
         if platform_name == "TIZEN":
             tizen_user = os.environ['TIZEN_USER']
             bdd_json.update({"tizen_user": tizen_user})

@@ -38,7 +38,7 @@ if [[ $# == 0 ]]; then
     unset ANDROID_VARS
 elif [[ $1 == "android_xwalk" ]]; then
     export TEST_PLATFORM="android"
-    export DEVICE_ID="08d33d28"
+    export DEVICE_ID=""
     export CONNECT_TYPE="adb"
     export TIZEN_USER=""
     export LAUNCHER="XWalkLauncher"
