@@ -44,6 +44,7 @@ OBJECT_INFO_KEYS = ["contentDescription", "checked", "scrollable", "text", "pack
 
 class Android(common.APP):
 
+
     def __init__(self, app_config, app_name,
                  apk_pkg_name, apk_activity_name):
         self.app_name = app_name
@@ -69,7 +70,8 @@ class Android(common.APP):
         self.AutomatorDeviceObject = self.d(text="PaTaTotOmAtO")
         self.info_temp = {}
         self.process_args = {"func_name": None, "func_args": []}
-        
+
+
     def launch_app(self):
         cmd = self.adb + \
                 " am start -n " + \
@@ -90,6 +92,7 @@ class Android(common.APP):
             return False
         return self.checkLauncher()
 
+
     def quit(self):
         check_cmd = self.adb + \
                 " ps | grep " + \
@@ -102,6 +105,7 @@ class Android(common.APP):
             self.doCMD(stop_cmd)
             if self.doCMD(check_cmd)[1] != []:
                 print("Please check your cmd: %s" % stop_cmd)
+
 
     def devices(self):
         out = "\n".join(self.doCMD("adb devices")[1])
@@ -136,6 +140,7 @@ class Android(common.APP):
 
         return (cmd_return_code, output)
 
+
     def killProcesses(self, ppid=None):
         ppid = str(ppid)
         pidgrp = []
@@ -163,11 +168,13 @@ class Android(common.APP):
                 except Exception:
                     return False
 
+
     def checkLauncher(self):
         currentPackageName = self.d.info["currentPackageName"]
         if currentPackageName == self.package_name:
             return True
         return False
+
 
     def registerWatcher(self, watcherName, whenText1, clickText, whenText2=None):
         if watcherName in self.d.watchers:
@@ -179,49 +186,64 @@ class Android(common.APP):
             self.d.watcher(watcherName).when(text=whenText1) \
                                         .click(text=clickText)            
 
+
     def removeAllWatchers(self):
         self.d.watchers.remove()
+
 
     def resetAllWatchers(self):
         self.d.watchers.reset()
 
+
     def runAllWatchers(self):
         self.d.watchers.run()
+
 
     def turnOnDevice(self):
         self.d.wakeup()
 
+
     def turnOffDevice(self):
         self.d.sleep()        
 
+
     def pressKeyBy(self, device_key):
         self.d.press(device_key)
+
 
     def setDeviceOrientation(self, orientation):
         if orientation == None or orientation == "":
             orientation = self.d.orientation
         self.d.orientation = orientation
 
+
     def freezeDeviceRotation(self):
         self.d.freeze_rotation()
+
 
     def unFreezeDeviceRotation(self):
         self.d.freeze_rotation(False)
 
+
     def takeScreenshot(self, name):
         self.d.screenshot(name)
+
 
     def openNotification(self):
         return self.d.open.notification()
 
+
     def openQuickSettings(self):
         return self.d.open.quick_settings()
+
 
     def waitObjectShow(self, ob, timeout=1000):
         return ob.wait.exists(timeout=timeout)
 
+
     def waitObjectGone(self, ob, timeout=1000):
         return ob.wait.gone(timeout=timeout)
+
 
     def selcetObjectBy(self, key ,value, class_name):
         if key == "text":
@@ -239,12 +261,14 @@ class Android(common.APP):
         else:
             return self.AutomatorDeviceObject
 
+
     def selectAnyObjectBy(self, value, class_name):
         for key in DEFAULT_PARAMETER_KEYS:
             ob = self.selcetObjectBy(key, value, class_name)
             if self.waitObjectShow(ob):
                 return ob
         return self.AutomatorDeviceObject
+
 
     def selectTvObjectBy(self, text_name):
         for key in DEFAULT_PARAMETER_KEYS:
@@ -253,12 +277,14 @@ class Android(common.APP):
                 return ob
         return self.AutomatorDeviceObject
 
+
     def selectBtnObjectBy(self, button_name):
         for key in DEFAULT_PARAMETER_KEYS:
             ob = self.selcetObjectBy(key, button_name, "android.widget.Button")
             if self.waitObjectShow(ob):
                 return ob
         return self.AutomatorDeviceObject    
+
 
     def selectEdtObjectBy(self, edittext_name):
         for key in DEFAULT_PARAMETER_KEYS:
@@ -267,12 +293,14 @@ class Android(common.APP):
                 return ob
         return self.AutomatorDeviceObject
 
+
     def selectImageViewObjectBy(self, imageview_name):
         for key in DEFAULT_PARAMETER_KEYS:
             ob = self.selcetObjectBy(key, imageview_name, "android.widget.ImageView")
             if self.waitObjectShow(ob):
                 return ob
         return self.AutomatorDeviceObject        
+
 
     def selectImageBtnObjectBy(self, imagebtn_name):
         for key in DEFAULT_PARAMETER_KEYS:
@@ -281,12 +309,14 @@ class Android(common.APP):
                 return ob
         return self.AutomatorDeviceObject
 
+
     def selectViewObjectBy(self, view_desc):
         for key in ["description", "descriptionContains"]:
             ob = self.selcetObjectBy(key, view_desc, "android.view.View")
             if self.waitObjectShow(ob, 3000):
                 return ob
         return self.AutomatorDeviceObject
+
 
     def selectWebObjectBy(self, web_desc):
         for key in ["description", "descriptionContains"]:
@@ -295,10 +325,12 @@ class Android(common.APP):
                 return ob
         return self.AutomatorDeviceObject  
 
+
     def getObjectInfo(self, ob, str_key="text"):
         if ob.exists and str_key in OBJECT_INFO_KEYS:
             return ob.info[str_key]
         return None
+
 
     def save2InfoTemp(self, msg, key):
         if msg == None:
@@ -306,10 +338,12 @@ class Android(common.APP):
         self.info_temp[key] = msg
         return True
 
+
     def get2InfoTemp(self, key):
         if key in self.info_temp.keys():
             return self.info_temp[key]
         return None
+
 
     def clickBtnObject(self, ob):
         if ob.exists:
@@ -317,11 +351,13 @@ class Android(common.APP):
             return True
         return False
 
+
     def setEditText(self, ob, text):
         if ob.exists:        
             ob.set_text(text)
             return True
         return False
+
 
     def selectRelativeObjectBy(self, ob, direction, class_name):
         if ob.exists:
@@ -335,6 +371,7 @@ class Android(common.APP):
                 return ob.down(className=class_name)
         return self.AutomatorDeviceObject
 
+
     def flingBy(self, orientation, direction):
         if orientation == "horiz" and direction == "forward":
             return self.d(scrollable=True).fling.horiz.forward()
@@ -346,21 +383,26 @@ class Android(common.APP):
             return self.d(scrollable=True).fling.vert.backward()
         return False
 
+
     def flingToEnd(self):
         # fling to end vertically
         return self.d(scrollable=True).fling.toEnd()
+
 
     def scrollBy(self, steps=10):
         # scroll forward(default) vertically(default)
         return self.d(scrollable=True).scroll(steps=steps)
 
+
     def scrollToEnd(self):
         # scroll to end vertically
         return self.d(scrollable=True).scroll.toEnd()
 
+
     def scrollTo(self, text_name):
         # scroll forward vertically until specific ui object appears
         return self.d(scrollable=True).scroll.to(text=text_name)
+
 
     def swipeTo(self, ob, direction):
         if ob.exists:
@@ -387,4 +429,4 @@ def launch_app_by_name(
     context.app = context.apps[app_name]
     if not context.app.launch_app():
         assert False
-    assert True     
+    assert True
