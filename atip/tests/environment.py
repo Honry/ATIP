@@ -73,7 +73,7 @@ def load_default_config():
         bdd_json.update({"app_launcher": app_launcher})
         bdd_json.update(
             {"desired-capabilities": bdd_envs["desired_capabilities"]})
-        bdd_json.update({"driver-url": bdd_envs["bdd_url"]})
+        bdd_json.update({"driver-url": bdd_envs["webdriver_url"]})
         if "test_prefix" in bdd_envs:
             bdd_json.update(
                 {"url-prefix": bdd_envs["test_prefix"]})
