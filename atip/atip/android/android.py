@@ -425,7 +425,8 @@ def launch_app_by_name(
         context.apps[app_name].quit()
     context.apps.update(
         {app_name: Android(context.bdd_config, app_name, apk_pkg_name, apk_activity_name)})
-    context.app = context.apps[app_name]
-    if not context.app.launch_app():
+    context.android = context.apps[app_name]
+    if not context.android.launch_app():
         assert False
+    print(context.android)
     assert True
