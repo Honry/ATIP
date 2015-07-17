@@ -33,57 +33,69 @@ from atip import environment as atipenv
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-android_json_path = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "android.json")
+bdd_json_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "bdd.json")
 
 
 def clean_context(context):
-    for app in context.apps.values():
+    for (app_name, app) in context.apps.items():
+        if app_name == "android":
+            continue
         try:
             app.quit()
         except Exception:
             pass
 
-    context.app = None
+    context.web = None
+    context.android = None
     context.apps = {}
 
 
 def load_default_config():
-    android_json = None
+    bdd_json = None
     try:
         platform_name = os.environ['TEST_PLATFORM']
         device = os.environ['DEVICE_ID']
         comm_mode = os.environ['CONNECT_TYPE']
         app_launcher = os.environ['LAUNCHER']
-        android_envs = json.loads(os.environ['ANDROID_VARS'])
-        android_json = {}
+        bdd_envs = json.loads(os.environ['WEBDRIVER_VARS'])
+        bdd_json = {}
         platform = {}
         platform.update({"name": platform_name})
         platform.update({"comm-mode": comm_mode})
         platform.update({"device": device})
-        android_json.update({"platform": platform})
-        android_json.update({"app_launcher": app_launcher})
-        android_json.update(
-            {"TEST_PKG_NAME": android_envs["androidPackage"]})
-        android_json.update(
-            {"TEST_ACTIVITY_NAME": android_envs["androidActivity"]})
+        bdd_json.update({"platform": platform})
+        bdd_json.update({"test-url": os.path.split(os.path.realpath(__file__))[0]})
+        if platform_name == "TIZEN":
+            tizen_user = os.environ['TIZEN_USER']
+            bdd_json.update({"tizen_user": tizen_user})
+        bdd_json.update({"app_launcher": app_launcher})
+        bdd_json.update(
+            {"desired-capabilities": bdd_envs["desired_capabilities"]})
+        bdd_json.update({"driver-url": bdd_envs["webdriver_url"]})
+        if "test_prefix" in bdd_envs:
+            bdd_json.update(
+                {"url-prefix": bdd_envs["test_prefix"]})
+        else:
+            bdd_json.update({"url-prefix": ""})
     except Exception as e:
-        print("Failed to get test envs: %s, switch to android.json" % e)
+        print("Failed to get test envs: %s, switch to bdd.json" % e)
         try:
-            with open(android_json_path, "rt") as android_json_file:
-                android_json_raw = android_json_file.read()
-                android_json_file.close()
-                android_json = json.loads(android_json_raw)
+            with open(bdd_json_path, "rt") as bdd_json_file:
+                bdd_json_raw = bdd_json_file.read()
+                bdd_json_file.close()
+                bdd_json = json.loads(bdd_json_raw)
         except Exception as e:
-            print("Failed to read android json: %s" % e)
+            print("Failed to read bdd json: %s" % e)
             return None
 
-    return android_json
+    return bdd_json
 
 
 def before_all(context):
     atipenv.before_all(context)
-    context.app = None
+    context.web = None
+    context.android = None
     context.apps = {}
     context.bdd_config = load_default_config()
     if not context.bdd_config:
