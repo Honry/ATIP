@@ -216,7 +216,7 @@ def i_visit_url(context, url):
 	</tr>	
 </table>
 
-* uiutomator Library Overview
+* Uiautomator Library Overview
 
 <table>
   <tr>
