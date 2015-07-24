@@ -154,25 +154,25 @@ def select_relative_any_object(context, class_target, relative, class_name, view
 def click_button_object(context, button_name):
 	ob = context.android.selectBtnObjectBy(button_name)
 	if ob.exists:
-		assert context.android.clickBtnObject(ob)
+		assert context.android.clickObject(ob)
 	else:
 		ob = context.android.selectImageBtnObjectBy(button_name)
 		assert ob.exists
-		assert context.android.clickBtnObject(ob)
+		assert context.android.clickObject(ob)
 
 
 @step(u'I click other "{class_name}" by "{which_key}" "{which_value}"')
 def click_other_view(context, class_name, which_key, which_value):
 	ob = context.android.selcetObjectBy(which_key, which_value, class_name)
 	assert ob.exists
-	assert context.android.clickBtnObject(ob)
+	assert context.android.clickObject(ob)
 
 
 @step(u'I click object "{key}"')
 def click_any_object(context, key):
 	ob = context.android.get2InfoTemp(key)
 	assert ob.exists
-	assert context.android.clickBtnObject(ob)
+	assert context.android.clickObject(ob)
 
 
 @step(u'I edit text "{edit_text}" to input "{text}"')
