@@ -61,13 +61,13 @@ def launch_app_by_name(context, app_name):
 
 
 @step(u'I turn on screen')
-def wake_up(context):
+def turn_on_screen(context):
     if get_test_platform(context) == "android":
         context.android.turnOnScreen()
 
 
 @step(u'I turn off screen')
-def wake_up(context):
+def turn_off_screen(context):
     if get_test_platform(context) == "android":
         context.android.turnOffScreen() 
 
