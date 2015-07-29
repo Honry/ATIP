@@ -82,7 +82,7 @@ class Android(common.APP):
                 pass
             else:
                 print("\n".join(output))
-                return False 
+                return False
         except Exception as e:
             return False
         return self.checkCurrentApp()

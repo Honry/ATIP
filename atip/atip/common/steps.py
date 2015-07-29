@@ -69,7 +69,7 @@ def turn_on_screen(context):
 @step(u'I turn off screen')
 def turn_off_screen(context):
     if get_test_platform(context) == "android":
-        context.android.turnOffScreen() 
+        context.android.turnOffScreen()
 
 # The possible orientation is:
 # natural or n

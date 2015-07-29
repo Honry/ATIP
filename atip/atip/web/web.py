@@ -754,7 +754,7 @@ def launch_webapp_by_name(
     context.apps.update(
         {app_name: WebAPP(context.bdd_config, app_name, apk_pkg_name, apk_activity_name)})
     context.apps.update(
-        {"android": android.Android(context.bdd_config, app_name, apk_pkg_name, apk_activity_name)})    
+        {"android": android.Android(context.bdd_config, app_name, apk_pkg_name, apk_activity_name)})
     context.web = context.apps[app_name]
     context.android = context.apps["android"]
     if not context.web.launch_app():
