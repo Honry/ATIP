@@ -132,11 +132,11 @@ class Android(common.APP):
         self.d.watchers.run()
 
 
-    def turnOnDevice(self):
+    def turnOnScreen(self):
         self.d.wakeup()
 
 
-    def turnOffDevice(self):
+    def turnOffScreen(self):
         self.d.sleep()        
 
 
@@ -362,5 +362,4 @@ def launch_app_by_name(
     context.android = context.apps[app_name]
     if not context.android.launch_app():
         assert False
-    print(context.android)
     assert True
